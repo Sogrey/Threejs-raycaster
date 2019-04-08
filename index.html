@@ -30,6 +30,7 @@ var VIEW_ANGLE = 45,
 var windowWidth, windowHeight;
 var length = 200,
 	flex = 2;
+var graph = [];
 threeStart();
 
 function threeStart() {
@@ -197,20 +198,25 @@ function initControl() {
 }
 
 function initGrid() {
-	var geometry = new THREE.CubeGeometry(8, 8, 8);
-	var material = new THREE.MeshBasicMaterial({
-		color: 0xC0C0C0
-	});
-	for(var i = 0; i < length / 10; i++) {
-		for(var j = 0; j < length / 10; j++) {
-			var salt = randomNum(1, 7);
-			if(salt <= flex) {
-				var cube = new THREE.Mesh(geometry, material);
-				cube.position.set(10 * j - length / 2 + 5, 5, 10 * i - length / 2 + 5);
-				scene.add(cube);
+	var geometry = new THREE.CubeGeometry( 8,8,8);
+		var material = new THREE.MeshBasicMaterial( {color: 0xC0C0C0} );
+		for(var i=0;i<length/10;i++){
+			 var nodeRow = [];
+             graph.push(nodeRow);
+			for(var j=0;j<length/10;j++){
+				var salt=randomNum(1,7);
+				if(salt>flex){
+					nodeRow.push(1);
+				}else{
+					nodeRow.push(0);
+				}
+				if(salt<=flex){					
+					var cube = new THREE.Mesh( geometry, material );
+					cube.position.set(10*j-length/2+5,5,10*i-length/2+5);
+					scene.add(cube);
+				}
 			}
 		}
-	}
 }
 
     var resultArray=new Array();
@@ -281,13 +287,79 @@ function initGrid() {
 			sphere.position.z=z;
 			resultArray.push(sphere);
 			scene.add( sphere );
+			caculatePath(resultArray);
 			isCaculate=true;
-			console.log("起始点坐标为  x:"+resultArray[0].position.x+",z:"+resultArray[0].position.z);
-			console.log("终止点坐标为  x:"+resultArray[1].position.x+",z:"+resultArray[1].position.z);
+//			console.log("起始点坐标为  x:"+resultArray[0].position.x+",z:"+resultArray[0].position.z);
+//			console.log("终止点坐标为  x:"+resultArray[1].position.x+",z:"+resultArray[1].position.z);
 			resultArray=new Array();
 		}
 
 	}
+var result;
+function caculatePath(resultArray){
+		//console.log(resultArray);
+		var maps = new Graph(graph);
+		var startX=(resultArray[0].position.z-5+length/2)/10;
+		var startY=(resultArray[0].position.x-5+length/2)/10;
+		var endX=(resultArray[1].position.z-5+length/2)/10;
+		var endY=(resultArray[1].position.x-5+length/2)/10;
+		//console.log(startX+' '+startY+' '+endX+' '+endY);
+	    var start = maps.grid[startX][startY];
+	    var end = maps.grid[endX][endY];
+	    result = astar.search(maps, start, end);
+	    if(result.length==0){
+	    	alert("无可到达路径");
+	    	cleanSphere(); 
+	    	return;
+	    }
+//	    var timesRun = 0;
+        timesRun = 0;
+		tempSphere = resultArray[0];
+	    pathAnimate();
+//		var interval = setInterval(function(){
+//			var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+//			var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+//			var sphere = new THREE.Mesh( geometry, material );
+//			sphere.position.x=result[timesRun].y*10-length/2+5;
+//			sphere.position.y=5;
+//			sphere.position.z=result[timesRun].x*10-length/2+5;
+//			scene.add( sphere );
+//			timesRun += 1;
+//			if(timesRun == result.length){
+//			    clearInterval(interval);
+//			    }			
+//			}, 200);
+		
+	}
+
+var timesRun = 0;
+var tempSphere;
+var isAdded=false;
+function pathAnimate(){
+	if(!isAdded){
+		scene.add(tempSphere);
+		isAdded=true;
+	}
+	if(timesRun==result.length){
+		return;
+	}
+	var next={
+	    x:result[timesRun].y*10-length/2+5,
+	    z:result[timesRun].x*10-length/2+5
+	}
+	if(tempSphere.position.x==next.x&&tempSphere.position.z==next.z){
+	    timesRun++;
+	    requestAnimationFrame(pathAnimate);
+	    return;
+	}
+	if(tempSphere.position.x>next.x)tempSphere.position.x-=1;
+	if(tempSphere.position.x<next.x)tempSphere.position.x+=1;
+	if(tempSphere.position.z>next.z)tempSphere.position.z-=1;
+	if(tempSphere.position.z<next.z)tempSphere.position.z+=1;
+	requestAnimationFrame(pathAnimate);
+	
+}
+	
 function randomNum(minNum, maxNum) {
 	switch(arguments.length) {
 		case 1:
