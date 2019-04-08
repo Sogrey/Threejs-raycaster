@@ -5,3 +5,9 @@
 - [使用Three.JS以及A*寻路算法制作自动寻路场景（三）使用Raycaster和构造器确定鼠标点击位置](https://blog.csdn.net/weixin_39028949/article/details/81133250)
 - [使用Three.JS以及A*寻路算法制作自动寻路场景（四）使用A*寻路算法和requestAnimationFrame函数实现寻路场景](https://blog.csdn.net/weixin_39028949/article/details/81143147)
 - [使用Three.JS以及A*寻路算法制作自动寻路场景（五）使用多view绘图实现小地图功能](https://blog.csdn.net/weixin_39028949/article/details/81158287)
+
+
+<div class="github-widget" data-repo="bgrins/javascript-astar"></div>
+<div class="github-widget" data-repo="BluFis/Threejs-Demo1"></div>
+<div><script type="text/javascript" src="https://git.hust.cc/GitHub-Repo-Widget.js/GithubRepoWidget.js"></script></div>
+
